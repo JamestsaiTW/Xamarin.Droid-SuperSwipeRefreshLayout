@@ -19,22 +19,22 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
     [Activity(Label = "RecyclerViewActivity")]
     public class RecyclerViewActivity : Activity
     {
-        readonly List<String> list = new List<String>();
+        readonly List<String> _dataList = new List<string>();
 
-        private RecyclerView recyclerView;
-        private RecyclerAdapter myAdapter;
-        private LinearLayoutManager linearLayoutManager;
-        private Views.SuperSwipeRefreshLayout swipeRefreshLayout;
+        private RecyclerView _recyclerView;
+        private RecyclerAdapter _myRecyclerAdapter;
+        private LinearLayoutManager _linearLayoutManager;
+        private SuperSwipeRefreshLayout _swipeRefreshLayout;
 
         // Header View
-        private ProgressBar progressBar;
-        private TextView textView;
-        private ImageView imageView;
+        private ProgressBar _progressBar;
+        private TextView _textView;
+        private ImageView _imageView;
 
         // Footer View
-        private ProgressBar footerProgressBar;
-        private TextView footerTextView;
-        private ImageView footerImageView;
+        private ProgressBar _footerProgressBar;
+        private TextView _footerTextView;
+        private ImageView _footerImageView;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -42,68 +42,68 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
             // Create your application here
             SetContentView(Resource.Layout.Activity_RecyclerView);
 
-            recyclerView = (RecyclerView)FindViewById(Resource.Id.recycler_view);
-            linearLayoutManager = new LinearLayoutManager(this);
-            recyclerView.SetLayoutManager(linearLayoutManager);
-            myAdapter = new RecyclerAdapter(this);
-            recyclerView.SetAdapter(myAdapter);
+            _recyclerView = (RecyclerView)FindViewById(Resource.Id.recycler_view);
+            _linearLayoutManager = new LinearLayoutManager(this);
+            _recyclerView.SetLayoutManager(_linearLayoutManager);
+            _myRecyclerAdapter = new RecyclerAdapter(this , _dataList );
+            _recyclerView.SetAdapter(_myRecyclerAdapter);
 
 
-            swipeRefreshLayout = FindViewById<Views.SuperSwipeRefreshLayout>(Resource.Id.Swipe_Refresh);
-            swipeRefreshLayout.SetHeaderView(CreateHeaderView());
-            swipeRefreshLayout.SetFooterView(CreateFooterView());
-            swipeRefreshLayout.SetTargetScrollWithLayout(true);
+            _swipeRefreshLayout = FindViewById<Views.SuperSwipeRefreshLayout>(Resource.Id.Swipe_Refresh);
+            _swipeRefreshLayout.SetHeaderView(CreateHeaderView());
+            _swipeRefreshLayout.SetFooterView(CreateFooterView());
+            _swipeRefreshLayout.SetTargetScrollWithLayout(true);
 
-            swipeRefreshLayout.SetOnPullRefreshListener(new MyOnPullRefreshListener(this));
-            swipeRefreshLayout.SetOnPushLoadMoreListener(new MyOnPushLoadMoreListener(this));
+            _swipeRefreshLayout.SetOnPullRefreshListener(new MyOnPullRefreshListener(this));
+            _swipeRefreshLayout.SetOnPushLoadMoreListener(new MyOnPushLoadMoreListener(this));
 
-            InitsDatas();
+            BuildDatas();
 
+            _myRecyclerAdapter.NotifyDataSetChanged();
         }
 
         private View CreateFooterView()
         {
-            View footerView = LayoutInflater.From(swipeRefreshLayout.Context)
+            var footerView = LayoutInflater.From(_swipeRefreshLayout.Context)
                     .Inflate(Resource.Layout.layout_footer, null);
-            footerProgressBar = (ProgressBar)footerView
+            _footerProgressBar = (ProgressBar)footerView
                     .FindViewById(Resource.Id.footer_pb_view);
-            footerImageView = (ImageView)footerView
+            _footerImageView = (ImageView)footerView
                     .FindViewById(Resource.Id.footer_image_view);
-            footerTextView = (TextView)footerView
+            _footerTextView = (TextView)footerView
                     .FindViewById(Resource.Id.footer_text_view);
-            footerProgressBar.Visibility = ViewStates.Gone;
-            footerImageView.Visibility = ViewStates.Visible;
-            footerImageView.SetImageResource(Resource.Drawable.down_arrow);
-            footerTextView.Text = "資料載入中....";
+            _footerProgressBar.Visibility = ViewStates.Gone;
+            _footerImageView.Visibility = ViewStates.Visible;
+            _footerImageView.SetImageResource(Resource.Drawable.down_arrow);
+            _footerTextView.Text = "資料載入中....";
             return footerView;
         }
 
         private View CreateHeaderView()
         {
-            View headerView = LayoutInflater.From(swipeRefreshLayout.Context)
+            var headerView = LayoutInflater.From(_swipeRefreshLayout.Context)
                     .Inflate(Resource.Layout.layout_head, null);
-            progressBar = (ProgressBar)headerView.FindViewById(Resource.Id.pb_view);
-            textView = (TextView)headerView.FindViewById(Resource.Id.text_view);
-            textView.Text = "資料更新中...";
-            imageView = (ImageView)headerView.FindViewById(Resource.Id.image_view);
-            imageView.Visibility = ViewStates.Visible;
-            imageView.SetImageResource(Resource.Drawable.down_arrow);
-            progressBar.Visibility = ViewStates.Gone;
+            _progressBar = (ProgressBar)headerView.FindViewById(Resource.Id.pb_view);
+            _textView = (TextView)headerView.FindViewById(Resource.Id.text_view);
+            _textView.Text = "資料更新中...";
+            _imageView = (ImageView)headerView.FindViewById(Resource.Id.image_view);
+            _imageView.Visibility = ViewStates.Visible;
+            _imageView.SetImageResource(Resource.Drawable.down_arrow);
+            _progressBar.Visibility = ViewStates.Gone;
             return headerView;
         }
 
-        private void InitsDatas()
+        private void BuildDatas()
         {
             for (int i = 1; i <= 50; i++)
             {
-                list.Add("item " + (list.Count + 1));
+                _dataList.Add("item " + (_dataList.Count + 1));
             }
-            myAdapter.AddAll(list, 0);
         }
 
         private class MyOnPullRefreshListener : SuperSwipeRefreshLayout.IOnPullRefreshListener
         {
-            private RecyclerViewActivity _context;
+            private readonly RecyclerViewActivity _context;
 
             public MyOnPullRefreshListener(RecyclerViewActivity context)
             {
@@ -112,19 +112,26 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
 
             void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnRefresh()
             {
-                _context.textView.Text = "資料更新中...";
-                _context.imageView.Visibility = ViewStates.Gone;
-                _context.progressBar.Visibility = ViewStates.Visible;
+                _context._textView.Text = "資料更新中...";
+                _context._imageView.Visibility = ViewStates.Gone;
+                _context._progressBar.Visibility = ViewStates.Visible;
 
                 Action myAction = () =>
                 {
-                    _context.swipeRefreshLayout.SetRefreshing(false);
-                    _context.progressBar.Visibility = ViewStates.Gone;
+                    _context._swipeRefreshLayout.SetRefreshing(false);
+                    _context._progressBar.Visibility = ViewStates.Gone;
 
+                    //更新資料完成後，需更新畫面
+                    _context._myRecyclerAdapter.NotifyDataSetChanged();
                 };
 
                 new Handler().PostDelayed(myAction, 2000);
 
+                //模擬更新資料
+                //Begin
+                _context._dataList.Clear();
+                _context.BuildDatas();
+                //End
             }
 
             void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullDistance(int distance)
@@ -134,15 +141,15 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
 
             void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullEnable(bool enable)
             {
-                _context.textView.Text = enable ? "放開 更新資料" : "再下拉 更新資料";
-                _context.imageView.Visibility = ViewStates.Visible;
-                _context.imageView.Rotation = enable ? 180 : 0;
+                _context._textView.Text = enable ? "放開 更新資料" : "再下拉 更新資料";
+                _context._imageView.Visibility = ViewStates.Visible;
+                _context._imageView.Rotation = enable ? 180 : 0;
             }
         }
 
         private class MyOnPushLoadMoreListener : SuperSwipeRefreshLayout.IOnPushLoadMoreListener
         {
-            private RecyclerViewActivity _context;
+            private readonly RecyclerViewActivity _context;
 
             public MyOnPushLoadMoreListener(RecyclerViewActivity context)
             {
@@ -151,19 +158,27 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
 
             void SuperSwipeRefreshLayout.IOnPushLoadMoreListener.OnLoadMore()
             {
-                _context.footerTextView.Text = "讀取更多資料中...";
-                _context.footerImageView.Visibility = ViewStates.Gone;
-                _context.footerProgressBar.Visibility = ViewStates.Visible;
+                _context._footerTextView.Text = "讀取更多資料中...";
+                _context._footerImageView.Visibility = ViewStates.Gone;
+                _context._footerProgressBar.Visibility = ViewStates.Visible;
 
                 Action myAction = () =>
                 {
 
-                    _context.footerImageView.Visibility = ViewStates.Visible;
-                    _context.progressBar.Visibility = ViewStates.Gone;
-                    _context.swipeRefreshLayout.SetLoadMore(false);
-                };
+                    _context._footerImageView.Visibility = ViewStates.Visible;
+                    _context._progressBar.Visibility = ViewStates.Gone;
+                    _context._swipeRefreshLayout.SetLoadMore(false);
 
+                    //資料讀取更多資料完成後，需更新畫面
+                    _context._myRecyclerAdapter.NotifyDataSetChanged();
+                };
+                
                 new Handler().PostDelayed(myAction, 5000);
+
+                //模擬讀取更多資料
+                //Begin
+                _context.BuildDatas();
+                //End
             }
 
             void SuperSwipeRefreshLayout.IOnPushLoadMoreListener.OnPushDistance(int distance)
@@ -173,9 +188,9 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
 
             void SuperSwipeRefreshLayout.IOnPushLoadMoreListener.OnPushEnable(bool enable)
             {
-                _context.footerTextView.Text = enable ? "放開 讀取更多資料" : "上拉 讀取更多資料";
-                _context.footerImageView.Visibility = ViewStates.Visible;
-                _context.footerImageView.Rotation = enable ? 0 : 180;
+                _context._footerTextView.Text = enable ? "放開 讀取更多資料" : "上拉 讀取更多資料";
+                _context._footerImageView.Visibility = ViewStates.Visible;
+                _context._footerImageView.Rotation = enable ? 0 : 180;
             }
         }
     }

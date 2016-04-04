@@ -17,29 +17,32 @@ namespace SuperSwipeRefreshLayoutDemoApp.Adapters
 {
     public class RecyclerAdapter : RecyclerView.Adapter
     {
-        private Context mContext;
-        private List<String> mDataSet;
+        private readonly Context _mContext;
+        private readonly List<string> _mDataSet;
 
-        public RecyclerAdapter(Context context)
+        public RecyclerAdapter(Context context, List<string> dataList)
         {
-            mContext = context;
-            mDataSet = new List<String>();
+            _mContext = context;
+            _mDataSet = dataList;
         }
-        public override int ItemCount
-        {
-            get { return mDataSet.Count; }
-        }
+
+        public override int ItemCount => _mDataSet.Count;
+
+        //Before Refactor
+        //public override int ItemCount
+        //{
+        //    get { return mDataSet.Count; }
+        //}
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            ChildViewHolder textViewHolder = (ChildViewHolder) holder;
-            textViewHolder.BindView(mDataSet[position], position);
+            var textViewHolder = (ChildViewHolder) holder;
+            textViewHolder.BindView(_mDataSet[position], position);
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
-            View view = LayoutInflater.From(mContext).Inflate(
-                Resource.Layout.RecyclerView_Item, parent, false);
+            var view = LayoutInflater.From(_mContext).Inflate(Resource.Layout.RecyclerView_Item, parent, false);
             return new ChildViewHolder(view);
         }
 
@@ -47,7 +50,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Adapters
         {
             for (int i = 0; i < itemCount; i++)
             {
-                mDataSet.RemoveAt(position);
+                _mDataSet.RemoveAt(position);
             }
             NotifyItemRangeRemoved(position, itemCount);
         }
@@ -58,17 +61,17 @@ namespace SuperSwipeRefreshLayoutDemoApp.Adapters
             return 0;
         }
 
-        public void Add(String text, int position)
-        {
-            mDataSet.Insert(position, text);
-            NotifyItemInserted(position);
-        }
+        //public void Add(String text, int position)
+        //{
+        //    mDataSet.Insert(position, text);
+        //    NotifyItemInserted(position);
+        //}
 
-        public void AddAll(List<String> list, int position)
-        {
-            mDataSet.InsertRange(position, list);
-            NotifyItemRangeInserted(position, list.Count);
-        }
+        //public void AddAll(List<String> list, int position)
+        //{
+        //    mDataSet.InsertRange(position, list);
+        //    NotifyItemRangeInserted(position, list.Count);
+        //}
 
     }
 }

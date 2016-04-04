@@ -167,10 +167,15 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         private void UpdateListenerCallBack()
         {
             int distance = _mCurrentTargetOffsetTop + _mHeadViewContainer.Height;
-            if (_mOnPullRefreshListener != null)
-            {
-                _mOnPullRefreshListener.OnPullDistance(distance);
-            }
+
+            _mOnPullRefreshListener?.OnPullDistance(distance);
+
+            //Before Refactor
+            //if (_mOnPullRefreshListener != null)
+            //{
+            //    _mOnPullRefreshListener.OnPullDistance(distance);
+            //}
+
             if (_usingDefaultHeader && _isProgressEnable)
             {
                 _defaultProgressView.SetPullDistance(distance);
@@ -186,8 +191,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 return;
             _usingDefaultHeader = false;
             _mHeadViewContainer.RemoveAllViews();
-            var layoutParams = new RelativeLayout.LayoutParams(
-                    _mHeaderViewWidth, _mHeaderViewHeight);
+            var layoutParams = new RelativeLayout.LayoutParams(_mHeaderViewWidth, _mHeaderViewHeight);
             layoutParams.AddRule(LayoutRules.AlignParentBottom);
             _mHeadViewContainer.AddView(child, layoutParams);
         }
@@ -204,11 +208,13 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             }
             _mFooterViewContainer.RemoveAllViews();
             var layoutParams = new RelativeLayout.LayoutParams(
-                    _mFooterViewWidth, _mFooterViewHeight);
+                _mFooterViewWidth, _mFooterViewHeight);
             _mFooterViewContainer.AddView(child, layoutParams);
         }
 
-        public SuperSwipeRefreshLayout(Context context) : this(context, null) { }
+        public SuperSwipeRefreshLayout(Context context) : this(context, null)
+        {
+        }
 
         public SuperSwipeRefreshLayout(Context context, IAttributeSet attrs) : base(context, attrs)
         {
@@ -241,13 +247,13 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
 
             _mHeaderViewWidth = displaySize.X;
             _mFooterViewWidth = displaySize.Y;
-            _mHeaderViewHeight = (int)(HEADER_VIEW_HEIGHT * metrics.Density);
-            _mFooterViewHeight = (int)(HEADER_VIEW_HEIGHT * metrics.Density);
+            _mHeaderViewHeight = (int) (HEADER_VIEW_HEIGHT*metrics.Density);
+            _mFooterViewHeight = (int) (HEADER_VIEW_HEIGHT*metrics.Density);
             _defaultProgressView = new CircleProgressView(Context);
             CreateHeaderViewContainer();
             CreateFooterViewContainer();
             ViewCompat.SetChildrenDrawingOrderEnabled(this, true);
-            _mSpinnerFinalOffset = DEFAULT_CIRCLE_TARGET * metrics.Density;
+            _mSpinnerFinalOffset = DEFAULT_CIRCLE_TARGET*metrics.Density;
             _density = metrics.Density;
             _mTotalDragDistance = _mSpinnerFinalOffset;
 
@@ -261,7 +267,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
 
         protected override int GetChildDrawingOrder(int childCount, int i)
         {
-            
+
             if (_mHeaderViewIndex < 0 && _mFooterViewIndex < 0)
             {
                 return i;
@@ -274,10 +280,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             {
                 return _mFooterViewIndex;
             }
-            int bigIndex = _mFooterViewIndex > _mHeaderViewIndex ? _mFooterViewIndex
-                    : _mHeaderViewIndex;
-            int smallIndex = _mFooterViewIndex < _mHeaderViewIndex ? _mFooterViewIndex
-                    : _mHeaderViewIndex;
+            int bigIndex = _mFooterViewIndex > _mHeaderViewIndex
+                ? _mFooterViewIndex
+                : _mHeaderViewIndex;
+            int smallIndex = _mFooterViewIndex < _mHeaderViewIndex
+                ? _mFooterViewIndex
+                : _mHeaderViewIndex;
             if (i >= smallIndex && i < bigIndex - 1)
             {
                 return i + 1;
@@ -288,11 +296,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             }
             return i;
         }
+
         private void CreateHeaderViewContainer()
         {
-           var layoutParams = new RelativeLayout.LayoutParams(
-                (int)(_mHeaderViewHeight * 0.8),
-                (int)(_mHeaderViewHeight * 0.8));
+            var layoutParams = new RelativeLayout.LayoutParams(
+                (int) (_mHeaderViewHeight*0.8),
+                (int) (_mHeaderViewHeight*0.8));
             layoutParams.AddRule(LayoutRules.CenterHorizontal);
             layoutParams.AddRule(LayoutRules.AlignParentBottom);
             _mHeadViewContainer = new HeadViewContainer(Context);
@@ -302,6 +311,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             _mHeadViewContainer.AddView(_defaultProgressView, layoutParams);
             AddView(_mHeadViewContainer);
         }
+
         private void CreateFooterViewContainer()
         {
             _mFooterViewContainer = new RelativeLayout(Context);
@@ -319,10 +329,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             _mHeadViewContainer.SetBackgroundColor(new Color(color));
         }
+
         public void SetOnPushLoadMoreListener(IOnPushLoadMoreListener onPushLoadMoreListener)
         {
             _mOnPushLoadMoreListener = onPushLoadMoreListener;
         }
+
         public void SetRefreshing(bool refreshing)
         {
             if (refreshing && _mRefreshing != refreshing)
@@ -332,11 +344,11 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 int endTarget = 0;
                 if (!mUsingCustomStart)
                 {
-                    endTarget = (int)(_mSpinnerFinalOffset + MOriginalOffsetTop);
+                    endTarget = (int) (_mSpinnerFinalOffset + MOriginalOffsetTop);
                 }
                 else
                 {
-                    endTarget = (int)_mSpinnerFinalOffset;
+                    endTarget = (int) _mSpinnerFinalOffset;
                 }
                 SetTargetOffsetTopAndBottom(endTarget - _mCurrentTargetOffsetTop, true /* requires update */);
                 _mNotify = false;
@@ -370,6 +382,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             _mHeadViewContainer.ClearAnimation();
             _mHeadViewContainer.StartAnimation(_mScaleAnimation);
         }
+
         private void SetAnimationProgress(float progress)
         {
             if (!_usingDefaultHeader)
@@ -379,6 +392,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             ViewCompat.SetScaleX(_mHeadViewContainer, progress);
             ViewCompat.SetScaleY(_mHeadViewContainer, progress);
         }
+
         private void SetRefreshing(bool refreshing, bool notify)
         {
             if (_mRefreshing == refreshing) return;
@@ -410,6 +424,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             //    }
             //}
         }
+
         private void StartScaleDownAnimation(Animation.IAnimationListener listener)
         {
             _mScaleDownAnimation = new ScaleDownAnimation(this)
@@ -427,6 +442,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             return _mRefreshing;
         }
+
         private void EnsureTarget()
         {
             if (_mTarget != null) return;
@@ -490,10 +506,11 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             int footViewWidth = _mFooterViewContainer.MeasuredWidth;
             int footViewHeight = _mFooterViewContainer.MeasuredHeight;
             _mFooterViewContainer.Layout((width/2 - footViewWidth/2), height
-                                                                     - _pushDistance, (width/2 + footViewWidth/2), height
-                                                                                                                  +
-                                                                                                                  footViewHeight -
-                                                                                                                  _pushDistance);
+                                                                      - _pushDistance, (width/2 + footViewWidth/2),
+                height
+                +
+                footViewHeight -
+                _pushDistance);
         }
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
@@ -508,7 +525,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 return;
             }
             _mTarget.Measure(MeasureSpec.MakeMeasureSpec(MeasuredWidth
-                                                        - PaddingLeft - PaddingRight, MeasureSpecMode.Exactly),
+                                                         - PaddingLeft - PaddingRight, MeasureSpecMode.Exactly),
                 MeasureSpec.MakeMeasureSpec(MeasuredHeight
                                             - PaddingTop - PaddingBottom,
                     MeasureSpecMode.Exactly));
@@ -614,8 +631,8 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             }
 
             if (_mTarget is AbsListView)
-            //Before Refactor
-            //else if (_mTarget is AbsListView)
+                //Before Refactor
+                //else if (_mTarget is AbsListView)
             {
                 var absListView = (AbsListView) _mTarget;
                 int count = absListView.Adapter.Count;
@@ -639,11 +656,11 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             }
 
             if (_mTarget is ScrollView)
-            //Before Refactor
-            //else if (_mTarget is ScrollView)
+                //Before Refactor
+                //else if (_mTarget is ScrollView)
             {
                 var scrollView = (ScrollView) _mTarget;
-                var view =  scrollView.GetChildAt(scrollView.ChildCount - 1);
+                var view = scrollView.GetChildAt(scrollView.ChildCount - 1);
 
                 if (view == null) return false;
                 int diff = (view.Bottom - (scrollView.Height + scrollView.ScrollY));
@@ -670,7 +687,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         public override bool OnInterceptTouchEvent(MotionEvent ev)
         {
             EnsureTarget();
-            
+
             int action = MotionEventCompat.GetActionMasked(ev);
             //var action = ev.ActionMasked;
             //var action = ev.Action;
@@ -793,99 +810,99 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             switch (action)
             {
-                case (int)MotionEventActions.Down:
+                case (int) MotionEventActions.Down:
                     _mActivePointerId = MotionEventCompat.GetPointerId(ev, 0);
                     _mIsBeingDragged = false;
                     Log.Debug(LOG_TAG, "debug:onTouchEvent ACTION_DOWN");
                     break;
-                case (int)MotionEventActions.Move:
+                case (int) MotionEventActions.Move:
+                {
+                    int pointerIndex = MotionEventCompat.FindPointerIndex(ev,
+                        _mActivePointerId);
+                    if (pointerIndex < 0)
                     {
-                        int pointerIndex = MotionEventCompat.FindPointerIndex(ev,
-                                _mActivePointerId);
-                        if (pointerIndex < 0)
-                        {
-                            Log.Error(LOG_TAG,
-                                    "Got ACTION_MOVE event but have an invalid active pointer id.");
-                            return false;
-                        }
-                         float y = MotionEventCompat.GetY(ev, pointerIndex);
-                         float overscrollBottom = (_mInitialMotionY - y) * DRAG_RATE;
-                        if (_mIsBeingDragged)
-                        {
-                            _pushDistance = (int)overscrollBottom;
-                            UpdateFooterViewPosition();
-
-                            _mOnPushLoadMoreListener?.OnPushEnable(_pushDistance >= _mFooterViewHeight);
-
-                            //Before Refactor
-                            //if (_mOnPushLoadMoreListener != null)
-                            //{
-                            //    _mOnPushLoadMoreListener
-                            //            .OnPushEnable(_pushDistance >= _mFooterViewHeight);
-                            //}
-                        }
-                        break;
+                        Log.Error(LOG_TAG,
+                            "Got ACTION_MOVE event but have an invalid active pointer id.");
+                        return false;
                     }
+                    float y = MotionEventCompat.GetY(ev, pointerIndex);
+                    float overscrollBottom = (_mInitialMotionY - y)*DRAG_RATE;
+                    if (_mIsBeingDragged)
+                    {
+                        _pushDistance = (int) overscrollBottom;
+                        UpdateFooterViewPosition();
+
+                        _mOnPushLoadMoreListener?.OnPushEnable(_pushDistance >= _mFooterViewHeight);
+
+                        //Before Refactor
+                        //if (_mOnPushLoadMoreListener != null)
+                        //{
+                        //    _mOnPushLoadMoreListener
+                        //            .OnPushEnable(_pushDistance >= _mFooterViewHeight);
+                        //}
+                    }
+                    break;
+                }
                 case MotionEventCompat.ActionPointerDown:
-                    {
-                        int index = MotionEventCompat.GetActionIndex(ev);
-                        _mActivePointerId = MotionEventCompat.GetPointerId(ev, index);
-                        break;
-                    }
+                {
+                    int index = MotionEventCompat.GetActionIndex(ev);
+                    _mActivePointerId = MotionEventCompat.GetPointerId(ev, index);
+                    break;
+                }
 
                 case MotionEventCompat.ActionPointerUp:
                     OnSecondaryPointerUp(ev);
                     break;
 
-                case (int)MotionEventActions.Up:
-                case (int)MotionEventActions.Cancel:
+                case (int) MotionEventActions.Up:
+                case (int) MotionEventActions.Cancel:
+                {
+                    if (_mActivePointerId == INVALID_POINTER)
                     {
-                        if (_mActivePointerId == INVALID_POINTER)
+                        if (action == (int) MotionEventActions.Up)
                         {
-                            if (action == (int)MotionEventActions.Up)
-                            {
-                                Log.Error(LOG_TAG,
-                                        "Got ACTION_UP event but don't have an active pointer id.");
-                            }
-                            return false;
-                        }
-                        int pointerIndex = MotionEventCompat.FindPointerIndex(ev,
-                          _mActivePointerId);
-                        float y = MotionEventCompat.GetY(ev, pointerIndex);
-                        float overscrollBottom = (_mInitialMotionY - y) * DRAG_RATE;
-                        _mIsBeingDragged = false;
-                        _mActivePointerId = INVALID_POINTER;
-                        if (overscrollBottom < _mFooterViewHeight
-                                || _mOnPushLoadMoreListener == null)
-                        {
-                            _pushDistance = 0;
-                        }
-                        else
-                        {
-                            _pushDistance = _mFooterViewHeight;
-                        }
-                        if (Android.OS.Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Honeycomb)
-                        {
-                            UpdateFooterViewPosition();
-
-                            if (_pushDistance != _mFooterViewHeight || _mOnPushLoadMoreListener == null) return false;
-                            _mLoadMore = true;
-                            _mOnPushLoadMoreListener.OnLoadMore();
-
-                            //Before Refactor
-                            //if (_pushDistance == _mFooterViewHeight
-                            //        && _mOnPushLoadMoreListener != null)
-                            //{
-                            //    _mLoadMore = true;
-                            //    _mOnPushLoadMoreListener.OnLoadMore();
-                            //}
-                        }
-                        else
-                        {
-                            AnimatorFooterToBottom((int)overscrollBottom, _pushDistance);
+                            Log.Error(LOG_TAG,
+                                "Got ACTION_UP event but don't have an active pointer id.");
                         }
                         return false;
                     }
+                    int pointerIndex = MotionEventCompat.FindPointerIndex(ev,
+                        _mActivePointerId);
+                    float y = MotionEventCompat.GetY(ev, pointerIndex);
+                    float overscrollBottom = (_mInitialMotionY - y)*DRAG_RATE;
+                    _mIsBeingDragged = false;
+                    _mActivePointerId = INVALID_POINTER;
+                    if (overscrollBottom < _mFooterViewHeight
+                        || _mOnPushLoadMoreListener == null)
+                    {
+                        _pushDistance = 0;
+                    }
+                    else
+                    {
+                        _pushDistance = _mFooterViewHeight;
+                    }
+                    if (Android.OS.Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Honeycomb)
+                    {
+                        UpdateFooterViewPosition();
+
+                        if (_pushDistance != _mFooterViewHeight || _mOnPushLoadMoreListener == null) return false;
+                        _mLoadMore = true;
+                        _mOnPushLoadMoreListener.OnLoadMore();
+
+                        //Before Refactor
+                        //if (_pushDistance == _mFooterViewHeight
+                        //        && _mOnPushLoadMoreListener != null)
+                        //{
+                        //    _mLoadMore = true;
+                        //    _mOnPushLoadMoreListener.OnLoadMore();
+                        //}
+                    }
+                    else
+                    {
+                        AnimatorFooterToBottom((int) overscrollBottom, _pushDistance);
+                    }
+                    return false;
+                }
             }
             return true;
         }
@@ -920,7 +937,9 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                         }
                         float dragPercent = System.Math.Min(1f, System.Math.Abs(originalDragPercent));
                         float extraOs = System.Math.Abs(overscrollTop) - _mTotalDragDistance;
-                        float slingshotDist = mUsingCustomStart ? _mSpinnerFinalOffset - MOriginalOffsetTop : _mSpinnerFinalOffset;
+                        float slingshotDist = mUsingCustomStart
+                            ? _mSpinnerFinalOffset - MOriginalOffsetTop
+                            : _mSpinnerFinalOffset;
                         float tensionSlingshotPercent = System.Math.Max(0,
                             System.Math.Min(extraOs, slingshotDist*2)/slingshotDist);
                         float tensionPercent = (float) ((tensionSlingshotPercent/4) - System.Math
@@ -957,7 +976,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                             }
 
                             _mOnPullRefreshListener?.OnPullEnable(false);
-                            
+
                             //Before Refactor
                             //if (_mOnPullRefreshListener != null)
                             //{
@@ -996,7 +1015,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                     {
                         if (action == (int) MotionEventActions.Up)
                         {
-                            Log.Error(LOG_TAG,"Got ACTION_UP event but don't have an active pointer id.");
+                            Log.Error(LOG_TAG, "Got ACTION_UP event but don't have an active pointer id.");
                         }
                         return false;
                     }
@@ -1021,11 +1040,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                         AnimateOffsetToStartPosition(_mCurrentTargetOffsetTop, listener);
                     }
                 }
-                _mActivePointerId = INVALID_POINTER;
-                return false;
+                    _mActivePointerId = INVALID_POINTER;
+                    return false;
             }
             return true;
         }
+
         private class ScaleAnimationListener : Java.Lang.Object, Animation.IAnimationListener
         {
             private readonly SuperSwipeRefreshLayout _ssrl;
@@ -1054,7 +1074,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             }
         }
 
-        [TargetApi(Value = (int)BuildVersionCodes.Honeycomb)]
+        [TargetApi(Value = (int) BuildVersionCodes.Honeycomb)]
         private void AnimatorFooterToBottom(int start, int end)
         {
             var valueAnimator = ValueAnimator.OfInt(start, end);
@@ -1064,7 +1084,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
             {
 
                 // update
-                _pushDistance = (int)valueAnimator.AnimatedValue;
+                _pushDistance = (int) valueAnimator.AnimatedValue;
                 UpdateFooterViewPosition();
             };
             valueAnimator.AnimationEnd += (sender, args) =>
@@ -1175,10 +1195,11 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
 
             int headViewWidth = _mHeadViewContainer.MeasuredWidth;
             int headViewHeight = _mHeadViewContainer.MeasuredHeight;
-            _mHeadViewContainer.Layout((width/2 - headViewWidth/2),-headViewHeight, (width/2 + headViewWidth/2), 0);
+            _mHeadViewContainer.Layout((width/2 - headViewWidth/2), -headViewHeight, (width/2 + headViewWidth/2), 0);
             int footViewWidth = _mFooterViewContainer.MeasuredWidth;
             int footViewHeight = _mFooterViewContainer.MeasuredHeight;
-            _mFooterViewContainer.Layout((width/2 - footViewWidth/2), height,(width/2 + footViewWidth/2), height + footViewHeight);
+            _mFooterViewContainer.Layout((width/2 - footViewWidth/2), height, (width/2 + footViewWidth/2),
+                height + footViewHeight);
         }
 
         //mAnimationToCorrectPosition的物件設定在建構函式中
@@ -1198,14 +1219,14 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 int endTarget = 0;
                 if (!_ssrl.mUsingCustomStart)
                 {
-                    endTarget = (int)(_ssrl._mSpinnerFinalOffset - System.Math
+                    endTarget = (int) (_ssrl._mSpinnerFinalOffset - System.Math
                         .Abs(_ssrl.MOriginalOffsetTop));
                 }
                 else
                 {
-                    endTarget = (int)_ssrl._mSpinnerFinalOffset;
+                    endTarget = (int) _ssrl._mSpinnerFinalOffset;
                 }
-                targetTop = (_ssrl.MFrom + (int)((endTarget - _ssrl.MFrom) * interpolatedTime));
+                targetTop = (_ssrl.MFrom + (int) ((endTarget - _ssrl.MFrom)*interpolatedTime));
                 int offset = targetTop - _ssrl._mHeadViewContainer.Top;
                 _ssrl.SetTargetOffsetTopAndBottom(offset, false /* requires update */);
             }
@@ -1215,7 +1236,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         private void MoveToStart(float interpolatedTime)
         {
             int targetTop = 0;
-            targetTop = (MFrom + (int)((MOriginalOffsetTop - MFrom) * interpolatedTime));
+            targetTop = (MFrom + (int) ((MOriginalOffsetTop - MFrom)*interpolatedTime));
             int offset = targetTop - _mHeadViewContainer.Top;
             SetTargetOffsetTopAndBottom(offset, false /* requires update */);
         }
@@ -1347,7 +1368,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 //}
             }
         }
-        
+
         public bool IsTargetScrollWithLayout()
         {
             return _targetScrollWithLayout;
@@ -1528,12 +1549,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
                 if (_bgPaint != null) return _bgPaint;
                 _bgPaint = new Paint()
                 {
-                    Color = new Color((int)_circleBackgroundColor),
+                    Color = new Color((int) _circleBackgroundColor),
                     AntiAlias = true
                 };
-                    
+
                 _bgPaint.SetStyle(Paint.Style.Fill);
-                  
+
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.Honeycomb)
                 {
                     this.SetLayerType(LayerType.Software, _bgPaint);
@@ -1630,7 +1651,7 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             private readonly SuperSwipeRefreshLayout _ssrl;
 
-            public ScaleAnimation(SuperSwipeRefreshLayout ssrl) : base()
+            public ScaleAnimation(SuperSwipeRefreshLayout ssrl)
             {
                 _ssrl = ssrl;
             }
@@ -1651,13 +1672,12 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             private readonly SuperSwipeRefreshLayout _ssrl;
 
-            public ScaleDownAnimation(SuperSwipeRefreshLayout ssrl) : base()
+            public ScaleDownAnimation(SuperSwipeRefreshLayout ssrl)
             {
                 _ssrl = ssrl;
             }
 
-            protected override void ApplyTransformation(float interpolatedTime,
-                Transformation t)
+            protected override void ApplyTransformation(float interpolatedTime, Transformation t)
             {
                 _ssrl.SetAnimationProgress(1 - interpolatedTime);
             }
@@ -1669,14 +1689,14 @@ namespace SuperSwipeRefreshLayoutDemoApp.Views
         {
             private readonly SuperSwipeRefreshLayout _ssrl;
 
-            public ScaleDownToStartAnimation(SuperSwipeRefreshLayout ssrl) : base()
+            public ScaleDownToStartAnimation(SuperSwipeRefreshLayout ssrl)
             {
                 _ssrl = ssrl;
             }
 
             protected override void ApplyTransformation(float interpolatedTime, Transformation t)
             {
-                float targetScale = (_ssrl._mStartingScale + (-_ssrl._mStartingScale * interpolatedTime));
+                float targetScale = (_ssrl._mStartingScale + (-_ssrl._mStartingScale*interpolatedTime));
                 _ssrl.SetAnimationProgress(targetScale);
                 _ssrl.MoveToStart(interpolatedTime);
             }

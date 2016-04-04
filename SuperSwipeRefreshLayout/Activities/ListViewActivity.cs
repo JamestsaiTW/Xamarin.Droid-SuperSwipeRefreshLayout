@@ -16,9 +16,9 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
     [Activity(Label = "ListViewActivity")]
     public class ListViewActivity : Activity
     {
-        private Views.SuperSwipeRefreshLayout swipeRefreshLayout;
+        private SuperSwipeRefreshLayout _swipeRefreshLayout;
 
-        private ListView listView;
+        private ListView _listView;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -27,50 +27,49 @@ namespace SuperSwipeRefreshLayoutDemoApp.Activities
             // Create your application here
             SetContentView(Resource.Layout.Activity_ListView);
 
-            listView = FindViewById<ListView>(Resource.Id.List_View);
-            listView.Adapter = new ArrayAdapter<String>(this,Android.Resource.Layout.SimpleListItem1, GetData());
+            _listView = FindViewById<ListView>(Resource.Id.List_View);
+            _listView.Adapter = new ArrayAdapter<string>(this,Android.Resource.Layout.SimpleListItem1, GetData());
 
-            swipeRefreshLayout = FindViewById<SuperSwipeRefreshLayout>(Resource.Id.Swipe_Refresh);
+            _swipeRefreshLayout = FindViewById<SuperSwipeRefreshLayout>(Resource.Id.Swipe_Refresh);
 
-            swipeRefreshLayout
-                .SetOnPullRefreshListener(new MyOnPullRefreshListener(this));
+            _swipeRefreshLayout.SetOnPullRefreshListener(new MyOnPullRefreshListener(this));
         }
 
         private class MyOnPullRefreshListener : SuperSwipeRefreshLayout.IOnPullRefreshListener
         {
-            private ListViewActivity _context;
+            private readonly ListViewActivity _context;
 
             public MyOnPullRefreshListener(ListViewActivity context)
             {
                 _context = context;
             }
 
-            void Views.SuperSwipeRefreshLayout.IOnPullRefreshListener.OnRefresh()
+            void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnRefresh()
             {
 
                 Action myAction = () =>
                 {
-                    _context.swipeRefreshLayout.SetRefreshing(false);
+                    _context._swipeRefreshLayout.SetRefreshing(false);
                 };
 
                 new Handler().PostDelayed(myAction, 2000);
 
             }
 
-            void Views.SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullDistance(int distance)
+            void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullDistance(int distance)
             {
-                System.Console.WriteLine("debug:distance = " + distance);
+                 Console.WriteLine("debug:distance = " + distance);
             }
 
-            void Views.SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullEnable(bool enable)
+            void SuperSwipeRefreshLayout.IOnPullRefreshListener.OnPullEnable(bool enable)
             {
 
             }
         }
 
-        private List<String> GetData()
+        private List<string> GetData()
         {
-            List<String> data = new List<String>();
+            List<string> data = new List<string>();
             for (int i = 0; i < 20; i++)
             {
                 data.Add("item -- " + i);
